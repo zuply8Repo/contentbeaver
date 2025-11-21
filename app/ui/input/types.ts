@@ -22,3 +22,57 @@ export interface ValidationErrors {
   tags?: string;
 }
 
+// Company Information Types
+export interface CompanyInfo {
+  companyName: string;
+  industryNiche: string;
+  productService: string;
+  audience: string;
+  mission: string;
+  vision: string;
+  statements: string[];
+}
+
+export interface CompanyInfoInputProps {
+  onSubmit?: (data: CompanyInfo) => void;
+  onSave?: (data: Partial<CompanyInfo>) => void;
+  initialData?: Partial<CompanyInfo>;
+  isLoading?: boolean;
+  className?: string;
+}
+
+export interface CompanyInfoValidationErrors {
+  companyName?: string;
+  industryNiche?: string;
+  productService?: string;
+  audience?: string;
+  mission?: string;
+  vision?: string;
+  statements?: string;
+}
+
+// Branding Types
+export interface BrandingInfo {
+  colorPalette: ColorInfo[];
+  mood: string[];
+}
+
+export interface ColorInfo {
+  id: string;
+  hex: string;
+  name: string;
+}
+
+export interface BrandingInfoInputProps {
+  onSubmit?: (data: BrandingInfo) => void;
+  onSave?: (data: Partial<BrandingInfo>) => void;
+  initialData?: Partial<BrandingInfo>;
+  isLoading?: boolean;
+  className?: string;
+}
+
+export interface BrandingInfoValidationErrors {
+  colorPalette?: string;
+  mood?: string;
+}
+
