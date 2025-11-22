@@ -23,6 +23,7 @@ const DEFAULT_COLOR_NAMES = ['Primary', 'Secondary', 'Accent', 'Custom 1', 'Cust
 export default function BrandingInput({
   onSubmit,
   onSave,
+  onDataChange,
   initialData,
   isLoading = false,
   className = '',
@@ -37,7 +38,6 @@ export default function BrandingInput({
   const [errors, setErrors] = useState<BrandingInfoValidationErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [customMood, setCustomMood] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
 
   // Auto-save functionality
   useEffect(() => {
@@ -48,6 +48,13 @@ export default function BrandingInput({
       return () => clearTimeout(timer);
     }
   }, [formData, onSave, touched]);
+
+  // Notify parent of full, current data immediately when it changes
+  useEffect(() => {
+    if (onDataChange) {
+      onDataChange(formData);
+    }
+  }, [formData, onDataChange]);
 
   const validateForm = (): boolean => {
     const newErrors: BrandingInfoValidationErrors = {};
@@ -78,26 +85,15 @@ export default function BrandingInput({
     return Object.keys(newErrors).length === 0;
   };
 
+  // Re-run validation whenever fields have been touched and the data changes
+  useEffect(() => {
+    if (Object.keys(touched).length > 0) {
+      validateForm();
+    }
+  }, [formData, touched]);
+
   const isValidHex = (hex: string): boolean => {
     return /^#[0-9A-F]{6}$/i.test(hex);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateForm() && onSubmit) {
-      onSubmit(formData);
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
-    }
-  };
-
-  const handleReset = () => {
-    setFormData({
-      colorPalette: [{ id: generateId(), hex: '#6366f1', name: 'Primary' }],
-      mood: [],
-    });
-    setErrors({});
-    setTouched({});
   };
 
   const addColor = () => {
@@ -157,7 +153,11 @@ export default function BrandingInput({
 
   return (
     <div className={`w-full max-w-4xl mx-auto ${className}`}>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Form submission is controlled by the parent page; prevent default here. */}
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="space-y-6"
+      >
         {/* Color Palette */}
         <div>
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
@@ -333,61 +333,6 @@ export default function BrandingInput({
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex-1 px-6 py-3 rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Submitting...
-              </span>
-            ) : (
-              'Submit Branding Information'
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleReset}
-            disabled={isLoading}
-            className="px-6 py-3 rounded-lg border-2 border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Reset
-          </button>
-        </div>
-
-        {/* Success Message */}
-        {showSuccess && (
-          <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 flex items-center gap-2 animate-fadeIn">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span className="font-medium">Branding information submitted successfully!</span>
-          </div>
-        )}
       </form>
 
       {/* Custom styles for animations */}
@@ -397,15 +342,8 @@ export default function BrandingInput({
           25% { transform: translateX(-4px); }
           75% { transform: translateX(4px); }
         }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
         .animate-shake {
           animation: shake 0.3s ease-in-out;
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.4s ease-out;
         }
       `}</style>
     </div>

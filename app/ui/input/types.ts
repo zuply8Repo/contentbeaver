@@ -36,6 +36,8 @@ export interface CompanyInfo {
 export interface CompanyInfoInputProps {
   onSubmit?: (data: CompanyInfo) => void;
   onSave?: (data: Partial<CompanyInfo>) => void;
+  // Called whenever the full, current form data changes
+  onDataChange?: (data: CompanyInfo) => void;
   initialData?: Partial<CompanyInfo>;
   isLoading?: boolean;
   className?: string;
@@ -66,6 +68,8 @@ export interface ColorInfo {
 export interface BrandingInfoInputProps {
   onSubmit?: (data: BrandingInfo) => void;
   onSave?: (data: Partial<BrandingInfo>) => void;
+  // Called whenever the full, current form data changes
+  onDataChange?: (data: BrandingInfo) => void;
   initialData?: Partial<BrandingInfo>;
   isLoading?: boolean;
   className?: string;

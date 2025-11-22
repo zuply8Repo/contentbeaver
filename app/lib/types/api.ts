@@ -29,6 +29,9 @@ export interface SaveProductSpecResponse {
 // Company Info API Types
 export interface SaveCompanyInfoRequest {
   companyInfo: CompanyInfo;
+  // Optional branding fields captured during unified onboarding
+  colorPalette?: BrandingInfo['colorPalette'];
+  brandMood?: BrandingInfo['mood'];
 }
 
 export interface SaveCompanyInfoResponse {
