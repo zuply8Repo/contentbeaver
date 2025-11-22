@@ -10,7 +10,8 @@ export default function ImageUploadTestPage() {
   const [basicImage, setBasicImage] = useState<ImageFile | null>(null);
   const [productDescription, setProductDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleBasicSubmit = (image: ImageFile | null) => {
     console.log("Basic image submitted:", image);
@@ -21,14 +22,48 @@ export default function ImageUploadTestPage() {
     }, 1000);
   };
 
-  const handleGenerate = () => {
-    console.log("Generate clicked with description:", productDescription);
-    setIsGenerating(true);
-    // Simulate generation
-    setTimeout(() => {
-      setIsGenerating(false);
-      alert("Product description generated!");
-    }, 2000);
+  const handleSave = async () => {
+    if (!basicImage || !productDescription.trim()) {
+      alert("Please upload an image and enter a description");
+      return;
+    }
+
+    setIsSaving(true);
+    setSuccessMessage("");
+
+    try {
+      // Create FormData for multipart/form-data upload
+      const formData = new FormData();
+      formData.append("file", basicImage.file);
+      formData.append("description", productDescription);
+
+      // Send to API
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error?.message || "Upload failed");
+      }
+
+      // Show success message
+      setSuccessMessage(
+        `Image uploaded successfully! URL: ${result.data.public_url}`
+      );
+      console.log("Upload successful:", result.data);
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert(
+        `Upload failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -125,16 +160,18 @@ export default function ImageUploadTestPage() {
                 rows={4}
                 className="w-full px-4 py-3 rounded-lg border-2 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-y"
                 placeholder="Enter product description..."
-                disabled={isGenerating}
+                disabled={isSaving}
               />
               <div className="mt-4">
                 <button
                   type="button"
-                  onClick={handleGenerate}
-                  disabled={isGenerating || !productDescription.trim()}
+                  onClick={handleSave}
+                  disabled={
+                    isSaving || !productDescription.trim() || !basicImage
+                  }
                   className="px-6 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  {isGenerating ? (
+                  {isSaving ? (
                     <span className="flex items-center justify-center gap-2">
                       <svg
                         className="animate-spin h-5 w-5"
@@ -155,54 +192,24 @@ export default function ImageUploadTestPage() {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         />
                       </svg>
-                      Generating...
+                      Saving...
                     </span>
                   ) : (
-                    "Generate"
+                    "Save"
                   )}
                 </button>
               </div>
+              {successMessage && (
+                <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <p className="text-sm text-green-800 dark:text-green-200 break-all">
+                    {successMessage}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Info Section */}
-          <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-200 dark:border-indigo-800 p-6">
-            <div className="flex items-start gap-3">
-              <svg
-                className="w-6 h-6 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <div>
-                <h3 className="font-semibold text-indigo-900 dark:text-indigo-100 mb-2">
-                  Testing Features
-                </h3>
-                <ul className="text-sm text-indigo-700 dark:text-indigo-300 space-y-1">
-                  <li>• Drag and drop an image onto the upload area</li>
-                  <li>• Click to browse and select an image</li>
-                  <li>
-                    • Try uploading invalid file types (should show error)
-                  </li>
-                  <li>
-                    • Try uploading files larger than max size (should show
-                    error)
-                  </li>
-                  <li>• Remove image by clicking the remove button</li>
-                  <li>• Replace image by clicking the replace button</li>
-                  <li>
-                    • Check browser console for onChange and onSave callbacks
-                  </li>
-                  <li>• Test in dark mode (toggle system theme)</li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

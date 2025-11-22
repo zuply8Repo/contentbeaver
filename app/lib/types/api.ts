@@ -70,3 +70,23 @@ export interface ImageFile {
   size: number;
   type: string;
 }
+
+// Image Upload API Types
+export interface UploadImageRequest {
+  file: File;
+  description: string;
+}
+
+export interface UserUpload {
+  id: string;
+  storage_path: string;
+  description: string;
+  created_at: string;
+}
+
+export interface UploadImageResponse {
+  upload: UserUpload;
+  public_url: string;
+  filename: string;
+  original_name: string;
+}
