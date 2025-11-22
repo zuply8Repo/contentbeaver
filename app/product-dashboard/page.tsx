@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import ProductSpecInput from '@/app/ui/input/product-spec-input';
-import { ProductSpec } from '@/app/ui/input/types';
+import { useState } from "react";
+import ProductSpecInput from "@/app/ui/input/product-spec-input";
+import { ProductSpec } from "@/app/ui/input/types";
+import ProductThumbnailsSummary from "@/app/ui/product-thumbnails-summary";
 
 export default function ProductDashboard() {
   const [showForm, setShowForm] = useState(false);
@@ -10,15 +11,29 @@ export default function ProductDashboard() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Temporary mock products to preview the thumbnails section
+  const mockProducts: { id: string; imageUrl?: string; alt?: string }[] = [
+    {
+      id: "product-1",
+      imageUrl: "/window.svg",
+      alt: "Travel bag product thumbnail",
+    },
+    {
+      id: "product-2",
+      // No imageUrl here on purpose to showcase the emoji placeholder state
+      alt: "Product without image thumbnail",
+    },
+  ];
+
   const handleSubmit = async (data: ProductSpec) => {
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/product-specs', {
-        method: 'POST',
+      const response = await fetch("/api/product-specs", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ productSpec: data }),
       });
@@ -26,21 +41,24 @@ export default function ProductDashboard() {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.error?.message || 'Failed to save product specification');
+        throw new Error(
+          result.error?.message || "Failed to save product specification"
+        );
       }
 
       // Show success message
       setShowSuccess(true);
-      
+
       // Reset form state after delay
       setTimeout(() => {
         setShowForm(false);
         setShowSuccess(false);
       }, 2000);
-      
     } catch (err) {
-      console.error('Error submitting product spec:', err);
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      console.error("Error submitting product spec:", err);
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -97,15 +115,14 @@ export default function ProductDashboard() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="font-medium">Product specification saved successfully!</span>
+              <span className="font-medium">
+                Product specification saved successfully!
+              </span>
             </div>
           )}
 
           {/* Form */}
-          <ProductSpecInput
-            onSubmit={handleSubmit}
-            isLoading={isSubmitting}
-          />
+          <ProductSpecInput onSubmit={handleSubmit} isLoading={isSubmitting} />
         </div>
       </div>
     );
@@ -124,46 +141,26 @@ export default function ProductDashboard() {
           </p>
         </div>
 
-        {/* Empty State Card */}
-        <div className="flex items-center justify-center">
-          <button
-            onClick={() => setShowForm(true)}
-            className="group relative w-full max-w-md p-12 rounded-2xl border-4 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/10 focus:outline-none focus:ring-4 focus:ring-indigo-500/20"
-            aria-label="Add your first product"
-          >
-            {/* Plus Icon */}
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-24 h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30 transition-colors duration-300">
-                <svg
-                  className="w-12 h-12 text-zinc-400 dark:text-zinc-600 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-              </div>
-
-              {/* Text */}
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-300">
-                  Add Your First Product
-                </h2>
-                <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-                  Get started by creating your first product specification
-                </p>
-              </div>
+        {/* Product thumbnails preview section */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                Your Products Preview
+              </h2>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                Here&apos;s a quick preview of how your products will appear as
+                thumbnails.
+              </p>
             </div>
+          </div>
 
-            {/* Subtle hover effect background */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500/0 to-purple-500/0 group-hover:from-indigo-500/5 group-hover:to-purple-500/5 transition-all duration-300 pointer-events-none" />
-          </button>
-        </div>
+          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 px-4 py-3">
+            <ProductThumbnailsSummary products={mockProducts} />
+          </div>
+        </section>
+
+        {/* Empty State Card */}
 
         {/* Optional: Help text */}
         <div className="text-center mt-8">
@@ -175,4 +172,3 @@ export default function ProductDashboard() {
     </div>
   );
 }
-

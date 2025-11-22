@@ -1,4 +1,4 @@
-import { ProductSpec, CompanyInfo, BrandingInfo } from '@/app/ui/input/types';
+import { ProductSpec, CompanyInfo, BrandingInfo } from "@/app/ui/input/types";
 
 // API Response Types
 export interface ApiResponse<T = unknown> {
@@ -30,8 +30,8 @@ export interface SaveProductSpecResponse {
 export interface SaveCompanyInfoRequest {
   companyInfo: CompanyInfo;
   // Optional branding fields captured during unified onboarding
-  colorPalette?: BrandingInfo['colorPalette'];
-  brandMood?: BrandingInfo['mood'];
+  colorPalette?: BrandingInfo["colorPalette"];
+  brandMood?: BrandingInfo["mood"];
 }
 
 export interface SaveCompanyInfoResponse {
@@ -55,10 +55,18 @@ export interface SaveBrandingInfoResponse {
 
 // Generic API Error Codes
 export enum ApiErrorCode {
-  VALIDATION_ERROR = 'VALIDATION_ERROR',
-  DATABASE_ERROR = 'DATABASE_ERROR',
-  INTERNAL_ERROR = 'INTERNAL_ERROR',
-  NOT_FOUND = 'NOT_FOUND',
-  UNAUTHORIZED = 'UNAUTHORIZED',
+  VALIDATION_ERROR = "VALIDATION_ERROR",
+  DATABASE_ERROR = "DATABASE_ERROR",
+  INTERNAL_ERROR = "INTERNAL_ERROR",
+  NOT_FOUND = "NOT_FOUND",
+  UNAUTHORIZED = "UNAUTHORIZED",
 }
 
+export interface ImageFile {
+  id: string;
+  file: File;
+  preview: string;
+  name: string;
+  size: number;
+  type: string;
+}
