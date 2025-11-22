@@ -28,7 +28,7 @@ export default function WelcomeScreen({
     if (onStart) {
       onStart();
     }
-    router.push("/onboarding/generalInfo");
+    router.push("/company");
   };
 
   return (
