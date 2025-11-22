@@ -76,3 +76,39 @@ export interface BrandingInfoValidationErrors {
   mood?: string;
 }
 
+// Image Upload Types
+export interface ImageFile {
+  id: string; // Unique identifier
+  file: File; // Original file object
+  preview: string; // Data URL for preview
+  name: string;
+  size: number;
+  type: string;
+}
+
+export interface ImageUploadProps {
+  // Callbacks
+  onSubmit?: (image: ImageFile | null) => void;
+  onSave?: (image: Partial<ImageFile> | null) => void;
+  onChange?: (image: ImageFile | null) => void;
+  
+  // Initial state
+  initialImage?: ImageFile | null;
+  
+  // Configuration
+  maxSize?: number; // In bytes, default: 5MB
+  acceptedFormats?: string[]; // Default: ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+  
+  // UI
+  isLoading?: boolean;
+  className?: string;
+  label?: string; // Default: "Upload Image"
+  required?: boolean;
+}
+
+export interface ImageUploadValidationErrors {
+  image?: string;
+  fileType?: string;
+  fileSize?: string;
+}
+
