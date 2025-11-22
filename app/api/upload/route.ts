@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/app/lib/supabaseServer";
 import { randomUUID } from "crypto";
-import { ApiResponse, UploadImageResponse } from "@/app/lib/types/api";
+import { ApiResponse, UploadImageResponse, GetUploadsResponse } from "@/app/lib/types/api";
 
 export async function POST(request: NextRequest) {
   try {
@@ -128,6 +128,69 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Unexpected error in upload route:", error);
+    return NextResponse.json<ApiResponse>(
+      {
+        success: false,
+        error: {
+          code: "INTERNAL_ERROR",
+          message: "An unexpected error occurred",
+          details: error,
+        },
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    // Fetch all uploads from database
+    const { data, error } = await supabaseServer
+      .from("user_uploads")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Database query error:", error);
+      return NextResponse.json<ApiResponse>(
+        {
+          success: false,
+          error: {
+            code: "DATABASE_ERROR",
+            message: "Failed to fetch uploads",
+            details: error,
+          },
+        },
+        { status: 500 }
+      );
+    }
+
+    // Generate public URLs for each upload
+    const uploadsWithUrls = data.map((upload) => {
+      const { data: urlData } = supabaseServer.storage
+        .from("user-image")
+        .getPublicUrl(upload.storage_path);
+
+      return {
+        id: upload.id,
+        storage_path: upload.storage_path,
+        description: upload.description,
+        created_at: upload.created_at,
+        public_url: urlData.publicUrl,
+      };
+    });
+
+    return NextResponse.json<ApiResponse<GetUploadsResponse>>(
+      {
+        success: true,
+        data: {
+          uploads: uploadsWithUrls,
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Unexpected error in GET upload route:", error);
     return NextResponse.json<ApiResponse>(
       {
         success: false,

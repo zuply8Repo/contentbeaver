@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductSpecInput from "@/app/ui/input/product-spec-input";
 import { ProductSpec } from "@/app/ui/input/types";
 import ProductThumbnailsSummary from "@/app/ui/product-thumbnails-summary";
@@ -10,20 +10,36 @@ export default function ProductDashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<
+    { id: string; imageUrl?: string; alt?: string }[]
+  >([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
-  // Temporary mock products to preview the thumbnails section
-  const mockProducts: { id: string; imageUrl?: string; alt?: string }[] = [
-    {
-      id: "product-1",
-      imageUrl: "/window.svg",
-      alt: "Travel bag product thumbnail",
-    },
-    {
-      id: "product-2",
-      // No imageUrl here on purpose to showcase the emoji placeholder state
-      alt: "Product without image thumbnail",
-    },
-  ];
+  // Fetch real products from the database
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/upload");
+        const result = await response.json();
+
+        if (result.success && result.data?.uploads) {
+          // Map uploads to product format
+          const mappedProducts = result.data.uploads.map((upload: any) => ({
+            id: upload.id,
+            imageUrl: upload.public_url,
+            alt: upload.description || "Product image",
+          }));
+          setProducts(mappedProducts);
+        }
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleSubmit = async (data: ProductSpec) => {
     setIsSubmitting(true);
@@ -156,7 +172,41 @@ export default function ProductDashboard() {
           </div>
 
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 px-4 py-3">
-            <ProductThumbnailsSummary products={mockProducts} />
+            {isLoadingProducts ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="flex items-center gap-2 text-zinc-500">
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Loading products...
+                </div>
+              </div>
+            ) : products.length > 0 ? (
+              <ProductThumbnailsSummary products={products} />
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-zinc-500 dark:text-zinc-400">
+                  No products uploaded yet. Upload your first product image to
+                  get started!
+                </p>
+              </div>
+            )}
           </div>
         </section>
 

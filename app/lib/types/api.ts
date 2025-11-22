@@ -90,3 +90,13 @@ export interface UploadImageResponse {
   filename: string;
   original_name: string;
 }
+
+export interface GetUploadsResponse {
+  uploads: Array<{
+    id: string;
+    storage_path: string;
+    description: string;
+    created_at: string;
+    public_url: string;
+  }>;
+}

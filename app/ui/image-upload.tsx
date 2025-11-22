@@ -9,18 +9,8 @@ export default function ImageUploadTestPage() {
   const router = useRouter();
   const [basicImage, setBasicImage] = useState<ImageFile | null>(null);
   const [productDescription, setProductDescription] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-
-  const handleBasicSubmit = (image: ImageFile | null) => {
-    console.log("Basic image submitted:", image);
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      alert(`Image uploaded: ${image?.name}`);
-    }, 1000);
-  };
 
   const handleSave = async () => {
     if (!basicImage || !productDescription.trim()) {
@@ -72,7 +62,7 @@ export default function ImageUploadTestPage() {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push("/product-dashboard")}
             className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-6"
           >
             <svg
@@ -114,26 +104,11 @@ export default function ImageUploadTestPage() {
             </div>
             <ImageUpload
               label="Upload Image"
-              onSubmit={handleBasicSubmit}
               onChange={(image: ImageFile | null) => {
                 setBasicImage(image);
                 console.log("Image changed:", image);
               }}
-              onSave={(image: ImageFile | null) => {
-                console.log("Image auto-saved:", image);
-              }}
-              isLoading={isSubmitting}
             />
-            {basicImage && (
-              <div className="mt-4 p-4 bg-zinc-50 dark:bg-zinc-800 rounded-lg">
-                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2">
-                  Current Image:
-                </p>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                  {basicImage.name} ({Math.round(basicImage.size / 1024)} KB)
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Product Description */}
