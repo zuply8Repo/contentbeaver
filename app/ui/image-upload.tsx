@@ -80,11 +80,11 @@ export default function ImageUploadTestPage() {
             <ImageUpload
               label="Upload Image"
               onSubmit={handleBasicSubmit}
-              onChange={(image) => {
+              onChange={(image: ImageFile | null) => {
                 setBasicImage(image);
                 console.log("Image changed:", image);
               }}
-              onSave={(image) => {
+              onSave={(image: ImageFile | null) => {
                 console.log("Image auto-saved:", image);
               }}
               isLoading={isSubmitting}
