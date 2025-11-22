@@ -80,3 +80,32 @@ export interface BrandingInfoValidationErrors {
   mood?: string;
 }
 
+// Image Upload Types
+export interface ImageFile {
+  id: string;
+  file: File;
+  preview: string;
+  name: string;
+  size: number;
+  type: string;
+}
+
+export interface ImageUploadProps {
+  onSubmit?: (image: ImageFile | null) => void;
+  onSave?: (image: ImageFile | null) => void;
+  onChange?: (image: ImageFile | null) => void;
+  initialImage?: ImageFile | null;
+  maxSize?: number;
+  acceptedFormats?: string[];
+  isLoading?: boolean;
+  className?: string;
+  label?: string;
+  required?: boolean;
+}
+
+export interface ImageUploadValidationErrors {
+  image?: string;
+  fileType?: string;
+  fileSize?: string;
+}
+
