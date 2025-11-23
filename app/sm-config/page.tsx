@@ -295,14 +295,16 @@ function SMConfigContent() {
 
 export default function SMConfigPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-linear-to-br from-zinc-50 via-white to-zinc-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          <p className="mt-4 text-zinc-600 dark:text-zinc-400">Loading...</p>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-linear-to-br from-zinc-50 via-white to-zinc-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <p className="mt-4 text-zinc-600 dark:text-zinc-400">Loading...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <SMConfigContent />
     </Suspense>
   );
