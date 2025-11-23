@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "@/app/ui/product-card";
 import { Linkedin, Instagram, Check } from "lucide-react";
 
 type Platform = "linkedin" | "instagram";
 
-export default function SMConfigPage() {
+function SMConfigContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const productId = searchParams.get("id");
@@ -290,5 +290,20 @@ export default function SMConfigPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SMConfigPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-linear-to-br from-zinc-50 via-white to-zinc-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          <p className="mt-4 text-zinc-600 dark:text-zinc-400">Loading...</p>
+        </div>
+      </div>
+    }>
+      <SMConfigContent />
+    </Suspense>
   );
 }
