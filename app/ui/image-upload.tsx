@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/app/ui/input/image-upload";
-import { ImageFile } from "@/app/lib/types/api";
+import {
+  ApiResponse,
+  UploadImageResponse,
+  ImageFile,
+} from "@/app/lib/types/api";
 
 export default function ImageUploadTestPage() {
   const router = useRouter();
@@ -33,17 +37,27 @@ export default function ImageUploadTestPage() {
         body: formData,
       });
 
-      const result = await response.json();
+      const result: ApiResponse<UploadImageResponse> = await response.json();
 
-      if (!response.ok || !result.success) {
+      if (
+        !response.ok ||
+        !result.success ||
+        !result.data ||
+        !result.data.upload?.id
+      ) {
         throw new Error(result.error?.message || "Upload failed");
       }
 
-      // Show success message
+      const uploadId = result.data.upload.id;
+
+      // Optional: keep success message for debugging
       setSuccessMessage(
-        `Image uploaded successfully! URL: ${result.data.public_url}`
+        `Image uploaded successfully! Redirecting to config for ID: ${uploadId}`
       );
       console.log("Upload successful:", result.data);
+
+      // Redirect to SM Config page for the newly created product
+      router.push(`/sm-config?id=${uploadId}`);
     } catch (error) {
       console.error("Upload error:", error);
       alert(

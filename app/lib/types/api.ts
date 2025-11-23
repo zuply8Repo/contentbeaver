@@ -100,3 +100,13 @@ export interface GetUploadsResponse {
     public_url: string;
   }>;
 }
+
+export interface GetUploadByIdResponse {
+  upload: {
+    id: string;
+    storage_path: string;
+    description: string;
+    created_at: string;
+    public_url: string;
+  };
+}

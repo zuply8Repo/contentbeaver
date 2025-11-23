@@ -39,9 +39,12 @@ export const ProductThumbnailsSummary: React.FC<Props> = ({
       );
     }
     return (
-      <div
+      <button
         key={product?.id}
-        className="relative w-20 h-20 bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden flex items-center justify-center mr-2"
+        type="button"
+        onClick={() => router.push(`/sm-config?id=${product?.id}`)}
+        className="relative w-20 h-20 bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden flex items-center justify-center mr-2 cursor-pointer hover:ring-2 hover:ring-blue-500 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        aria-label="View product configuration"
       >
         {product?.imageUrl ? (
           <img
@@ -52,7 +55,7 @@ export const ProductThumbnailsSummary: React.FC<Props> = ({
         ) : (
           <span className="text-gray-300 text-2xl">👜</span>
         )}
-      </div>
+      </button>
     );
   };
 
