@@ -1,4 +1,4 @@
-import { ProductSpec, CompanyInfo, BrandingInfo } from '@/app/ui/input/types';
+import { ProductSpec, CompanyInfo, BrandingInfo, SocialMediaInfo } from '@/app/ui/input/types';
 
 // API Response Types
 export interface ApiResponse<T = unknown> {
@@ -46,6 +46,18 @@ export interface SaveBrandingInfoRequest {
 export interface SaveBrandingInfoResponse {
   id: string;
   brandingInfo: BrandingInfo;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Social Media Info API Types
+export interface SaveSocialMediaInfoRequest {
+  socialMediaInfo: SocialMediaInfo;
+}
+
+export interface SaveSocialMediaInfoResponse {
+  id: string;
+  socialMediaInfo: SocialMediaInfo;
   createdAt: string;
   updatedAt: string;
 }
