@@ -52,14 +52,37 @@ function SMConfigContent() {
     setIsGenerating(true);
     setShowSuccess(false);
 
-    // Simulate API call with dummy data
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    try {
+      // Call our API route which will trigger the n8n webhook (avoids CORS)
+      const response = await fetch("/api/trigger-n8n", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId,
+          platforms: Array.from(selectedPlatforms),
+          postCount,
+        }),
+      });
 
-    setIsGenerating(false);
-    setShowSuccess(true);
+      const result = await response.json();
 
-    // Hide success message after 5 seconds
-    setTimeout(() => setShowSuccess(false), 5000);
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Failed to trigger workflow");
+      }
+
+      console.log("✅ Workflow triggered:", result);
+
+      // Navigate to loading page on success
+      router.push(`/sm-config/loading?productId=${productId}`);
+    } catch (error) {
+      console.error("Error generating posts:", error);
+      alert(
+        "Failed to start post generation. Please check your connection and try again."
+      );
+      setIsGenerating(false);
+    }
   };
 
   if (!productId) {

@@ -109,3 +109,27 @@ export interface ImageUploadValidationErrors {
   fileSize?: string;
 }
 
+// Theme Selection Types
+export interface ThemeOption {
+  id: string;
+  text: string;
+  columnName: string; // "theme1", "theme2", or "theme3"
+}
+
+export interface ThemeData {
+  id: string;
+  created_at: string;
+  theme1: string;
+  theme2: string;
+  theme3: string;
+  selected_theme: string | null;
+}
+
+export interface ThemeSelectorProps {
+  onSubmit?: (selectedTheme: string, themeData: ThemeOption) => void;
+  onThemeSelect?: (theme: ThemeOption) => void;
+  initialSelection?: string | null;
+  isLoading?: boolean;
+  className?: string;
+}
+

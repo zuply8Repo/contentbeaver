@@ -110,3 +110,26 @@ export interface GetUploadByIdResponse {
     public_url: string;
   };
 }
+
+// Theme Selection API Types
+export interface GetThemesResponse {
+  id: string;
+  created_at: string;
+  themes: Array<{
+    id: string;
+    text: string;
+    columnName: string;
+  }>;
+  selectedTheme: string | null;
+}
+
+export interface SaveThemeSelectionRequest {
+  selectedTheme: string; // "theme1", "theme2", or "theme3"
+  themeId: string; // The database id from themes table
+}
+
+export interface SaveThemeSelectionResponse {
+  id: string;
+  selectedTheme: string;
+  updatedAt: string;
+}
